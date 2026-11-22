@@ -25,6 +25,10 @@ function App() {
     const [receiptPreview, setReceiptPreview] = useState(null);
     const [receiptData, setReceiptData] = useState(null);
     const [totalExpense, setTotalExpense] = useState(0);
+    const [totalFoodExpense, setTotalFoodExpense] = useState(0);
+    const [totalHousingExpense, setTotalHousingExpense] = useState(0);
+    const [totalTransportExpense, setTotalTransportExpense] = useState(0);
+    const [totalShoppingExpense, setTotalShoppingExpense] = useState(0);
 
      function handleReceiptChange(event) {
         
@@ -62,6 +66,17 @@ function App() {
             setReceiptData(data);
             console.log(data);
             setTotalExpense(prev => prev + Number(data.total_amount_spent));
+
+            if (data.expense_category == 'Food') {
+              setTotalFoodExpense(prev => prev + Number(data.total_amount_spent));
+            } else if (data.expense_category == 'Housing') {
+              setTotalHousingExpense(prev => prev + Number(data.total_amount_spent));
+            } else if (data.expense_category == 'Transport') {
+              setTotalTransportExpense(prev => prev + Number(data.total_amount_spent));
+            } else if (data.expense_category == 'Shopping') {
+              setTotalShoppingExpense(prev => prev + Number(data.total_amount_spent));
+            }
+            
           } catch(error) {
             console.error("Receipt upload error:", error);
           }
@@ -134,7 +149,7 @@ function App() {
                 <Utensils size={20} />
               </div>
               <p>Food</p>
-              <h3>$780.00</h3>
+              <h3>{totalFoodExpense.toFixed(2)}</h3>
             </div>
 
             <div className="category-card">
@@ -142,7 +157,7 @@ function App() {
                 <Home size={20} />
               </div>
               <p>Housing</p>
-              <h3>$1,900.00</h3>
+              <h3>{totalHousingExpense.toFixed(2)}</h3>
             </div>
 
             <div className="category-card">
@@ -150,7 +165,7 @@ function App() {
                 <Car size={20} />
               </div>
               <p>Transport</p>
-              <h3>$460.00</h3>
+              <h3>{totalTransportExpense.toFixed(2)}</h3>
             </div>
 
             <div className="category-card">
@@ -158,7 +173,7 @@ function App() {
                 <ShoppingCart size={20} />
               </div>
               <p>Shopping</p>
-              <h3>$320.00</h3>
+              <h3>{totalShoppingExpense.toFixed(2)}</h3>
             </div>
           </div>
         </section>
