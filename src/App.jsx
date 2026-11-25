@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 import "./index.css";
-import  { useState, useRef} from 'react';
+import  { useState, useRef, useEffect} from 'react';
 const transactions = [
   { name: "Grocery Store", category: "Food", amount: 86.42, icon: Utensils },
   { name: "Electricity Bill", category: "Utilities", amount: 124.50, icon: Home },
@@ -20,6 +20,14 @@ const transactions = [
 ];
 
 function App() {
+
+    const [ Action, setAction] = useState(() => {
+     return JSON.parse(localStorage.getItem("dollarview_transactions") || "[]");
+    });
+
+    const [archives, setArchives] = useState(() => {
+      return JSON.parse(localStorage.getItem("dollarview_archives"))
+    });
     const fileInputRef = useRef(null);
     const [receipt, setReceipt] = useState(null);
     const [receiptPreview, setReceiptPreview] = useState(null);
@@ -30,6 +38,8 @@ function App() {
     const [totalTransportExpense, setTotalTransportExpense] = useState(0);
     const [totalShoppingExpense, setTotalShoppingExpense] = useState(0);
 
+    
+
      function handleReceiptChange(event) {
         
         const file = event.target.files[0];
@@ -37,6 +47,14 @@ function App() {
         setReceipt(file);
         setReceiptPreview(URL.createObjectURL(file));
         sendReceiptToServer(file);
+    }
+
+    function handleClear(){
+      setTotalExpense(0);
+      setTotalFoodExpense(0);
+      setTotalHousingExpense(0);
+      setTotalTransportExpense(0);
+      setTotalShoppingExpense(0);
     }
 
     async function sendReceiptToServer(file)  {
@@ -120,6 +138,9 @@ function App() {
           <button className="scan-button" onClick={() => fileInputRef.current.click()}>
             <ScanLine size={18} />
             Scan Receipt
+          </button>
+          <button className="clear-button" onClick={() => handleClear()}>
+            Clear this month's data
           </button>
         </header>
 

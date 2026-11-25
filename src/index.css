@@ -112,6 +112,18 @@ h1, h2, h3 {
   font-weight: 600;
 }
 
+.clear-button {
+  background: #31483a;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
 .summary-card {
   background: #31483a;
   color: white;

@@ -60,6 +60,28 @@ app.post('/analyze-receipt', async (req, res) => {
     }
 });
 
+// app.post('/generate-comment', async(req, res) => {
+//     console.log('request on comment generation')
+//     try {
+//         const { transaction} = req.body;
+
+//         const commentCompletion = await groq.chat.completion.create({
+//             model: 'qwen/qwen3.8-27b',
+//             max_tokens= 300,
+//             messages: [
+//                 {
+//                     role: "user",
+//                     content: [
+//                         type: text
+//                     ]
+//                 }
+//             ]
+//         })
+//     } catch {
+
+//     }
+// })
+
 app.listen(PORT, () => {
     console.log(`server is listening at http://localhost:${PORT}`);
 })
