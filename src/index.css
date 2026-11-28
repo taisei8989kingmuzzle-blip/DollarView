@@ -124,6 +124,17 @@ h1, h2, h3 {
   font-weight: 600;
 }
 
+.archive-card {
+  background: #31483a;
+  color: white;
+  border-radius: 22px;
+  padding: 32px;
+  display: flex;
+  margin: 10px;
+  min-height: 190px;
+  align-items: center;
+}
+
 .summary-card {
   background: #31483a;
   color: white;

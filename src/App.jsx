@@ -19,27 +19,32 @@ const transactions = [
   { name: "Online Shopping", category: "Shopping", amount: 72.99, icon: ShoppingCart },
 ];
 
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October','November', 'December'
+];
+
 function App() {
 
-    const [ Action, setAction] = useState(() => {
-     return JSON.parse(localStorage.getItem("dollarview_transactions") || "[]");
-    });
+    const currentMonthIndex = new Date().getMonth();
+    const monthName = months[currentMonthIndex];
 
-    const [archives, setArchives] = useState(() => {
-      return JSON.parse(localStorage.getItem("dollarview_archives"))
-    });
+    const previousMonthIndex = (currentMonthIndex + 11) % 12;
+    const previousMonthName = months[previousMonthIndex];
+
+
     const fileInputRef = useRef(null);
     const [receipt, setReceipt] = useState(null);
     const [receiptPreview, setReceiptPreview] = useState(null);
+    
     const [receiptData, setReceiptData] = useState(null);
     const [totalExpense, setTotalExpense] = useState(0);
     const [totalFoodExpense, setTotalFoodExpense] = useState(0);
     const [totalHousingExpense, setTotalHousingExpense] = useState(0);
     const [totalTransportExpense, setTotalTransportExpense] = useState(0);
     const [totalShoppingExpense, setTotalShoppingExpense] = useState(0);
-
+    const [previousMonthTotalExpenseUpdated, setPreviousMonthTotalExpenseUpdated] = useState(0);
+  
     
-
+    
      function handleReceiptChange(event) {
         
         const file = event.target.files[0];
@@ -50,11 +55,22 @@ function App() {
     }
 
     function handleClear(){
+          const newTransaction = {
+              finalExpense: totalExpense,
+              finalFoodExpense: totalFoodExpense,
+              finalHousingExpense: totalHousingExpense,
+              finalTransportExpense: totalTransportExpense,
+              finalShoppingExpense: totalShoppingExpense,
+            };
+
+        localStorage.setItem(monthName, JSON.stringify(newTransaction));
       setTotalExpense(0);
       setTotalFoodExpense(0);
       setTotalHousingExpense(0);
       setTotalTransportExpense(0);
       setTotalShoppingExpense(0);
+
+            
     }
 
     async function sendReceiptToServer(file)  {
@@ -81,8 +97,12 @@ function App() {
               throw new Error(data.error || "Receipt analysis failed");
             }
 
-            setReceiptData(data);
+          
+
+          
+            
             console.log(data);
+          
             setTotalExpense(prev => prev + Number(data.total_amount_spent));
 
             if (data.expense_category == 'Food') {
@@ -104,6 +124,7 @@ function App() {
         reader.readAsDataURL(file);
     }
 
+    
   return (
     <div className="app">
       {/* Sidebar */}
@@ -148,15 +169,44 @@ function App() {
         <section className="summary-card">
           <div>
             <p className="card-label">TOTAL SPENDING THIS MONTH</p>
-            <h2>{totalExpense.toFixed(2)}</h2>
+            <h2>${totalExpense.toFixed(2)}</h2>
             <div className="comparison">
               <TrendingUp size={16} />
-              <span>8.5% above your previous average</span>
+              <span>${(() => {
+              const fetchedPreviousMonthData = localStorage.getItem(previousMonthName);
+
+              if (!fetchedPreviousMonthData) {
+                return 0.0;
+              }
+              const changeInTotalExpensePerMonth = (totalExpense.toFixed(2) - Number(JSON.parse(fetchedPreviousMonthData).finalExpense).toFixed(2));
+              return changeInTotalExpensePerMonth;
+
+            })()} your previous average</span>
             </div>
           </div>
 
           <div className="summary-icon">
             <Wallet size={30} />
+          </div>
+        </section>
+
+        <section className="archive-card">
+          <div>
+            <p className="card-label">
+             {previousMonthName}'s expense
+            </p>
+            <h2>$
+            {(() => {
+              const fetchedPreviousMonthData = localStorage.getItem(previousMonthName);
+
+              if (!fetchedPreviousMonthData) {
+                return 0.0;
+              }
+              
+              return Number(JSON.parse(fetchedPreviousMonthData).finalExpense).toFixed(2);
+
+            })()}
+            </h2>
           </div>
         </section>
 
@@ -252,7 +302,14 @@ function App() {
               Explore insights
               <ArrowUpRight size={18} />
             </button>
+
+
+            
+
+            
           </div>
+
+          
       </main>
     
     </div>
