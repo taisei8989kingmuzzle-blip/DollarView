@@ -42,7 +42,7 @@ function App() {
     const [totalTransportExpense, setTotalTransportExpense] = useState(0);
     const [totalShoppingExpense, setTotalShoppingExpense] = useState(0);
     const [previousMonthTotalExpenseUpdated, setPreviousMonthTotalExpenseUpdated] = useState(0);
-  
+    const [changeBetweenMonths, setChangeBetweenMonths] = useState(0);
     
     
      function handleReceiptChange(event) {
@@ -70,7 +70,18 @@ function App() {
       setTotalTransportExpense(0);
       setTotalShoppingExpense(0);
 
-            
+       const fetchedPreviousMonthData = localStorage.getItem(monthName);
+
+        if (!fetchedPreviousMonthData) {
+                return 0.0;
+        }
+              
+      setPreviousMonthTotalExpenseUpdated(Number(JSON.parse(fetchedPreviousMonthData).finalExpense).toFixed(2));
+
+
+              
+       setChangeBetweenMonths(totalExpense.toFixed(2) - Number(previousMonthTotalExpenseUpdated).toFixed(2));
+       
     }
 
     async function sendReceiptToServer(file)  {
@@ -128,23 +139,7 @@ function App() {
   return (
     <div className="app">
       {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="brand">
-          <Wallet size={26} />
-          <span>DollarView</span>
-        </div>
-
-        <nav>
-          <div className="nav-item active">Dashboard</div>
-          <div className="nav-item">Transactions</div>
-          <div className="nav-item">Insights</div>
-        </nav>
-
-        <div className="sidebar-bottom">
-          <p>See where your money goes.</p>
-        </div>
-      </aside>
-
+      
       {/* Main Content */}
       <main className="main">
         <header className="header">
@@ -172,16 +167,7 @@ function App() {
             <h2>${totalExpense.toFixed(2)}</h2>
             <div className="comparison">
               <TrendingUp size={16} />
-              <span>${(() => {
-              const fetchedPreviousMonthData = localStorage.getItem(previousMonthName);
-
-              if (!fetchedPreviousMonthData) {
-                return 0.0;
-              }
-              const changeInTotalExpensePerMonth = (totalExpense.toFixed(2) - Number(JSON.parse(fetchedPreviousMonthData).finalExpense).toFixed(2));
-              return changeInTotalExpensePerMonth;
-
-            })()} your previous average</span>
+              <span>±${changeBetweenMonths} your previous average</span>
             </div>
           </div>
 
@@ -193,19 +179,10 @@ function App() {
         <section className="archive-card">
           <div>
             <p className="card-label">
-             {previousMonthName}'s expense
+             {monthName}'s expense
             </p>
             <h2>$
-            {(() => {
-              const fetchedPreviousMonthData = localStorage.getItem(previousMonthName);
-
-              if (!fetchedPreviousMonthData) {
-                return 0.0;
-              }
-              
-              return Number(JSON.parse(fetchedPreviousMonthData).finalExpense).toFixed(2);
-
-            })()}
+            {previousMonthTotalExpenseUpdated}
             </h2>
           </div>
         </section>
